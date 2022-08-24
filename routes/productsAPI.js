@@ -15,7 +15,7 @@ router.post("/",
     ]],
   async (req, res) => {
     const errors = validationResult(req)
-    if(!errors.isEmpty()){
+    if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() })
     }
     try {
@@ -36,6 +36,30 @@ router.post("/",
       res.status(500).send("Server error")
     }
   })
-router.get("/", (req, res) => res.send("products route"))
+
+// get all products
+router.get("/", async (req, res) => {
+  try {
+    const products = await Product.find()
+    res.json(products)
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("Server error")
+  }
+})
+
+router.get("/:id", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id)
+    if (!product) {
+      return res.status(404).json({ msg: "Product was not found" })
+    }
+
+    res.json(product)
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("Server error")
+  }
+})
 
 module.exports = router
